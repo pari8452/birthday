@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full overflow-hidden">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Locked Cosmos | A Birthday Secret</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- GSAP for robust transitions -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        serif: ['"Playfair Display"', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #020205;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        /* Glassmorphism panel configurations */
+        .glass-panel {
+            background: rgba(10, 10, 20, 0.45);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .glass-key {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .glass-key:active {
+            background: rgba(168, 85, 247, 0.2);
+            border-color: rgba(168, 85, 247, 0.5);
+            transform: scale(0.95);
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 9px;
+        }
+
+        /* Candle flame animation */
+        .candle-flame {
+            background: radial-gradient(ellipse at bottom, #f97316 0%, #eab308 50%, transparent 100%);
+            border-radius: 50% 50% 20% 20%;
+            animation: flicker 0.15s ease-in-out infinite alternate;
+            filter: drop-shadow(0 -5px 10px rgba(234, 179, 8, 0.8));
+        }
+
+        @keyframes flicker {
+            0% { transform: scale(1); }
+            100% { transform: scale(0.92) rotate(-1deg); }
+        }
+
+        /* Smooth character animation splits */
+        .split-char span {
+            display: inline-block;
+            transform-origin: 50% 100%;
+            will-change: transform, opacity;
+        }
+    </style>
+</head>
+<body class="h-full flex items-center justify-center font-sans text-zinc-100 overflow-hidden relative">
+
+    <!-- Interactive Ambient Canvas -->
+    <canvas id="ambient-canvas" class="absolute inset-0 w-full h-full pointer-events-none z-0 opacity-60"></canvas>
+
+    <!-- ========================================== -->
+    <!-- SECURE PASSCODE ENTRY LOCK SCREEN          -->
+    <!-- ========================================== -->
+    <section id="lock-screen" class="relative z-10 max-w-sm w-full px-6 flex flex-col items-center transition-all duration-700">
+        <div id="lock-card" class="glass-panel w-full rounded-3xl p-8 space-y-6 text-center shadow-2xl">
+            
+            <!-- Padlock / Status Header -->
+            <div class="space-y-2 flex flex-col items-center">
+                <div id="lock-icon-wrap" class="w-12 h-12 rounded-full bg-purple-500/10 flex items-center justify-center border border-purple-500/20 mb-2">
+                    <i id="lock-icon" data-lucide="lock" class="w-5 h-5 text-purple-400"></i>
+                </div>
+                <h1 class="font-serif text-2xl font-light tracking-tight">Access Locked</h1>
+                <p id="lock-status" class="text-[10px] tracking-widest uppercase font-semibold text-zinc-500">Enter Secret Passcode</p>
+            </div>
+
+            <!-- Dot Indicators for Code Progress (7 Digits) -->
+            <div class="flex justify-center gap-3 py-2">
+                <div class="dot-indicator w-3 h-3 rounded-full bg-zinc-800 transition-all duration-300"></div>
+                <div class="dot-indicator w-3 h-3 rounded-full bg-zinc-800 transition-all duration-300"></div>
+                <div class="dot-indicator w-3 h-3 rounded-full bg-zinc-800 transition-all duration-300"></div>
+                <div class="dot-indicator w-3 h-3 rounded-full bg-zinc-800 transition-all duration-300"></div>
+                <div class="dot-indicator w-3 h-3 rounded-full bg-zinc-800 transition-all duration-300"></div>
+                <div class="dot-indicator w-3 h-3 rounded-full bg-zinc-800 transition-all duration-300"></div>
+                <div class="dot-indicator w-3 h-3 rounded-full bg-zinc-800 transition-all duration-300"></div>
+            </div>
+
+            <!-- Tactical Touch Keypad -->
+            <div class="grid grid-cols-3 gap-3 max-w-[260px] mx-auto">
+                <button onclick="pressKey('1')" class="glass-key aspect-square rounded-2xl flex items-center justify-center font-mono text-xl text-zinc-300 hover:text-white">1</button>
+                <button onclick="pressKey('2')" class="glass-key aspect-square rounded-2xl flex items-center justify-center font-mono text-xl text-zinc-300 hover:text-white">2</button>
+                <button onclick="pressKey('3')" class="glass-key aspect-square rounded-2xl flex items-center justify-center font-mono text-xl text-zinc-300 hover:text-white">3</button>
+                
+                <button onclick="pressKey('4')" class="glass-key aspect-square rounded-2xl flex items-center justify-center font-mono text-xl text-zinc-300 hover:text-white">4</button>
+                <button onclick="pressKey('5')" class="glass-key aspect-square rounded-2xl flex items-center justify-center font-mono text-xl text-zinc-300 hover:text-white">5</button>
+                <button onclick="pressKey('6')" class="glass-key aspect-square rounded-2xl flex items-center justify-center font-mono text-xl text-zinc-300 hover:text-white">6</button>
+                
+                <button onclick="pressKey('7')" class="glass-key aspect-square rounded-2xl flex items-center justify-center font-mono text-xl text-zinc-300 hover:text-white">7</button>
+                <button onclick="pressKey('8')" class="glass-key aspect-square rounded-2xl flex items-center justify-center font-mono text-xl text-zinc-300 hover:text-white">8</button>
+                <button onclick="pressKey('9')" class="glass-key aspect-square rounded-2xl flex items-center justify-center font-mono text-xl text-zinc-300 hover:text-white">9</button>
+                
+                <button onclick="clearCode()" class="glass-key aspect-square rounded-2xl flex items-center justify-center text-xs text-zinc-500 hover:text-zinc-300" title="Clear">CLR</button>
+                <button onclick="pressKey('0')" class="glass-key aspect-square rounded-2xl flex items-center justify-center font-mono text-xl text-zinc-300 hover:text-white">0</button>
+                <button onclick="deleteKey()" class="glass-key aspect-square rounded-2xl flex items-center justify-center text-zinc-500 hover:text-zinc-300" title="Delete">
+                    <i data-lucide="delete" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- UNLOCKED MAIN CELEBRATION PORTAL           -->
+    <!-- ========================================== -->
+    <main id="main-portal" class="hidden opacity-0 relative z-10 max-w-4xl w-full mx-auto px-6 py-12 flex flex-col items-center justify-start h-full overflow-y-auto space-y-12">
+        
+        <!-- Header -->
+        <header class="text-center space-y-3 mt-12">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-[10px] tracking-wider uppercase font-semibold text-purple-300">
+                <i data-lucide="sparkles" class="w-3 h-3"></i> Cosmic Signal Unlocked
+            </span>
+            <!-- INSTRUCTION: Feel free to swap "My Dearest Friend" with their actual name -->
+            <h2 id="bday-header" class="font-serif text-4xl md:text-6xl font-extralight tracking-tight text-white split-char">
+                Happy Birthday!
+            </h2>
+            <p class="text-sm text-zinc-400 max-w-md mx-auto font-light leading-relaxed">
+                Some gates open only at exact intersections of time. Thank you for walking through this life journey alongside me.
+            </p>
+        </header>
+
+        <!-- Main Narrative & Interactive Candle Split -->
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-8 w-full">
+            
+            <!-- Letter Card (Left side) -->
+            <div id="letter-card" class="glass-panel md:col-span-7 rounded-3xl p-6 md:p-8 space-y-6 flex flex-col justify-between opacity-0 translate-y-6">
+                <div class="space-y-4">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="heart" class="w-4 h-4 text-rose-500"></i>
+                        <span class="text-xs font-mono text-zinc-400">COSMIC_LOG // JULY_08_2005</span>
+                    </div>
+                    <p class="text-sm md:text-base text-zinc-300 font-light leading-relaxed">
+                        To the absolute best friend anybody could have asked for. Time has a way of testing connections, but ours has only solidified. 
+                    </p>
+                    <p class="text-sm md:text-base text-zinc-300 font-light leading-relaxed">
+                        Thank you for keeping my secrets, amplifying my joy, and ground-checking me when reality got chaotic. You deserve a year filled with brilliant breakthroughs and boundless, simple peace.
+                    </p>
+                </div>
+                <div class="pt-4 border-t border-white/5 flex items-center justify-between">
+                    <span class="text-[10px] font-mono text-zinc-500">SIGNATURE KEY VALIDATED</span>
+                    <span class="text-xs italic font-serif text-rose-400">Always and Forever</span>
+                </div>
+            </div>
+
+            <!-- Interactive Candle Hub (Right side) -->
+            <div id="candle-card" class="glass-panel md:col-span-5 rounded-3xl p-6 flex flex-col items-center justify-center space-y-6 opacity-0 translate-y-6">
+                <p class="text-xs text-zinc-400 tracking-wide font-light text-center">Tap the flame to blow out your candle</p>
+                
+                <!-- Cake & Candle Illustration -->
+                <div class="relative w-48 h-48 flex flex-col justify-end items-center py-4">
+                    
+                    <!-- Flame -->
+                    <div id="candle-entity" onclick="blowCandle()" class="relative z-20 flex flex-col items-center cursor-pointer mb-[-6px]">
+                        <div id="candle-flame" class="candle-flame w-4 h-9 mb-1.5"></div>
+                        <div class="w-2.5 h-12 bg-gradient-to-b from-purple-400 to-indigo-500 rounded-sm"></div>
+                    </div>
+
+                    <!-- Top Cake tier -->
+                    <div class="w-32 h-10 bg-zinc-800 rounded-full border-b-[4px] border-zinc-900 shadow-lg relative">
+                        <div class="absolute inset-x-2 top-0.5 h-2.5 bg-zinc-700/80 rounded-full"></div>
+                    </div>
+
+                    <!-- Bottom Cake tier -->
+                    <div class="w-40 h-12 bg-zinc-900 rounded-full border-b-[6px] border-black shadow-2xl relative mt-[-6px]">
+                        <div class="absolute inset-x-2 top-0.5 h-3 bg-zinc-800/80 rounded-full"></div>
+                    </div>
+
+                    <!-- Plate -->
+                    <div class="w-48 h-3 bg-zinc-950 rounded-full mt-[-6px] border border-white/5"></div>
+                </div>
+
+                <!-- Wish Portal Reveal Structure -->
+                <div id="wish-portal" class="w-full space-y-3 hidden opacity-0 scale-95 transition-all duration-700">
+                    <input id="wish-input" type="text" placeholder="Cast a silent wish into the starry sky..." class="w-full bg-black/40 border border-white/10 hover:border-white/20 focus:border-purple-500/30 rounded-xl px-4 py-3 text-xs focus:outline-none transition-all placeholder:text-zinc-600">
+                    <button onclick="sendWish()" class="w-full py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 transition-colors font-semibold text-xs tracking-wide flex items-center justify-center gap-1.5">
+                        Send to the Stars <i data-lucide="send" class="w-3.5 h-3.5"></i>
+                    </button>
+                </div>
+
+                <!-- Wish Success Notice -->
+                <div id="wish-success" class="text-center space-y-2 hidden opacity-0">
+                    <p class="text-xs text-purple-300 font-semibold flex items-center justify-center gap-1">
+                        <i data-lucide="check-circle" class="w-4 h-4"></i> Wish Cast Successfully.
+                    </p>
+                    <p class="text-[10px] text-zinc-500 leading-relaxed max-w-[200px] mx-auto">
+                        Your thought coordinates have been processed into the celestial sky grid.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Sound Controls (Fixed Bottom Right) -->
+    <div class="fixed bottom-6 right-6 z-50">
+        <button id="sound-toggle" class="glass-panel p-3.5 rounded-full hover:bg-white/10 transition-colors text-zinc-400 hover:text-white" onclick="toggleMute()">
+            <i id="sound-icon" data-lucide="volume-2" class="w-5 h-5"></i>
+        </button>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- JAVASCRIPT ANIMATION & LOGIC CORE          -->
+    <!-- ========================================== -->
+    <script>
+        // Set up SVG icons
+        lucide.createIcons();
+
+        // Passcode configuration state
+        const correctCode = "8072005";
+        let inputCode = "";
+        const dots = document.querySelectorAll('.dot-indicator');
+        const lockScreen = document.getElementById('lock-screen');
+        const lockCard = document.getElementById('lock-card');
+        const mainPortal = document.getElementById('main-portal');
+
+        // Web Audio Synthesizer Engine
+        let audioCtx = null;
+        let isMuted = false;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function playSound(type) {
+            if (isMuted) return;
+            initAudio();
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+
+            const now = audioCtx.currentTime;
+
+            if (type === 'tick') {
+                // Tactical clicking tone
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(800 + (inputCode.length * 100), now);
+                gain.gain.setValueAtTime(0.04, now);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.1);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 0.1);
+            } 
+            else if (type === 'error') {
+                // Low alert tone
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(130, now);
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.4);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 0.4);
+            } 
+            else if (type === 'success') {
+                // Arpeggiated chime progression
+                const chord = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+                chord.forEach((freq, idx) => {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, now + (idx * 0.1));
+                    gain.gain.setValueAtTime(0.08, now + (idx * 0.1));
+                    gain.gain.exponentialRampToValueAtTime(0.0001, now + (idx * 0.1) + 1.5);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now + (idx * 0.1));
+                    osc.stop(now + (idx * 0.1) + 1.5);
+                });
+            }
+            else if (type === 'blow') {
+                // Descending wind wave sound
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(300, now);
+                osc.frequency.exponentialRampToValueAtTime(80, now + 0.6);
+                gain.gain.setValueAtTime(0.12, now);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.6);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 0.6);
+            }
+            else if (type === 'wish') {
+                // Sweeping cosmic wave
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(180, now);
+                osc.frequency.exponentialRampToValueAtTime(900, now + 1.2);
+                gain.gain.setValueAtTime(0.08, now);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.2);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 1.2);
+            }
+        }
+
+        function toggleMute() {
+            isMuted = !isMuted;
+            const soundIcon = document.getElementById('sound-icon');
+            if (isMuted) {
+                soundIcon.setAttribute('data-lucide', 'volume-x');
+            } else {
+                soundIcon.setAttribute('data-lucide', 'volume-2');
+            }
+            lucide.createIcons();
+        }
+
+        // ==========================================
+        // KEYPAD SYSTEM INTERACTION
+        // ==========================================
+        function pressKey(num) {
+            if (inputCode.length < 7) {
+                inputCode += num;
+                playSound('tick');
+                updateDots();
+            }
+            if (inputCode.length === 7) {
+                setTimeout(verifyPasscode, 250);
+            }
+        }
+
+        function deleteKey() {
+            if (inputCode.length > 0) {
+                inputCode = inputCode.slice(0, -1);
+                playSound('tick');
+                updateDots();
+            }
+        }
+
+        function clearCode() {
+            inputCode = "";
+            playSound('tick');
+            updateDots();
+        }
+
+        function updateDots() {
+            dots.forEach((dot, index) => {
+                if (index < inputCode.length) {
+                    dot.classList.remove('bg-zinc-800');
+                    dot.classList.add('bg-purple-400', 'shadow-[0_0_8px_rgba(168,85,247,0.8)]');
+                } else {
+                    dot.classList.remove('bg-purple-400', 'shadow-[0_0_8px_rgba(168,85,247,0.8)]');
+                    dot.classList.add('bg-zinc-800');
+                }
+            });
+        }
+
+        function verifyPasscode() {
+            if (inputCode === correctCode) {
+                playSound('success');
+                
+                // Unlock Sequence Animations
+                document.getElementById('lock-icon-wrap').classList.add('bg-green-500/10', 'border-green-500/30');
+                document.getElementById('lock-icon').setAttribute('data-lucide', 'unlock');
+                document.getElementById('lock-icon').classList.remove('text-purple-400');
+                document.getElementById('lock-icon').classList.add('text-green-400');
+                document.getElementById('lock-status').innerText = "Access Granted";
+                document.getElementById('lock-status').classList.remove('text-zinc-500');
+                document.getElementById('lock-status').classList.add('text-green-400');
+                lucide.createIcons();
+
+                gsap.to(lockCard, {
+                    scale: 0.9,
+                    opacity: 0,
+                    duration: 0.6,
+                    delay: 0.2,
+                    ease: "power2.in",
+                    onComplete: loadMainPortal
+                });
+            } else {
+                playSound('error');
+                
+                // Shaking Error Indication
+                gsap.to(lockCard, {
+                    x: 10,
+                    duration: 0.05,
+                    repeat: 5,
+                    yoyo: true,
+                    onComplete: () => {
+                        gsap.set(lockCard, { x: 0 });
+                        inputCode = "";
+                        updateDots();
+                    }
+                });
+            }
+        }
+
+        // ==========================================
+        // TRANSITION TO MAIN PORTAL
+        // ==========================================
+        function loadMainPortal() {
+            lockScreen.classList.add('hidden');
+            mainPortal.classList.remove('hidden');
+            
+            // Build continuous confetti shower to celebrate
+            confetti({
+                particleCount: 120,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#a855f7', '#6366f1', '#ec4899']
+            });
+
+            // Smoothly reveal layout
+            gsap.to(mainPortal, {
+                opacity: 1,
+                duration: 1,
+                ease: "power2.out",
+                onComplete: () => {
+                    document.body.classList.remove('overflow-hidden');
+                }
+            });
+
+            // Splitting typography characters for the main reveal animation
+            const el = document.getElementById('bday-header');
+            const chars = el.innerText.split('');
+            el.innerHTML = '';
+            chars.forEach(c => {
+                const span = document.createElement('span');
+                span.innerText = c === ' ' ? '\u00A0' : c;
+                el.appendChild(span);
+            });
+
+            // Character text reveal animation
+            gsap.fromTo("#bday-header span", 
+                { opacity: 0, y: 35, scaleY: 0, rotate: -10 },
+                { 
+                    opacity: 1, 
+                    y: 0, 
+                    scaleY: 1, 
+                    rotate: 0, 
+                    duration: 1.2, 
+                    stagger: 0.04, 
+                    ease: "elastic.out(1, 0.45)" 
+                }
+            );
+
+            // Parallel fade transitions for content panels
+            gsap.to('#letter-card', {
+                opacity: 1,
+                y: 0,
+                duration: 1.2,
+                delay: 0.5,
+                ease: "power3.out"
+            });
+
+            gsap.to('#candle-card', {
+                opacity: 1,
+                y: 0,
+                duration: 1.2,
+                delay: 0.7,
+                ease: "power3.out"
+            });
+        }
+
+        // ==========================================
+        // INTERACTIVE BIRTHDAY CANDLE MECHANIC
+        // ==========================================
+        let candleBlown = false;
+
+        function blowCandle() {
+            if (candleBlown) return;
+            candleBlown = true;
+
+            playSound('blow');
+
+            // Hide the active flame
+            const flame = document.getElementById('candle-flame');
+            gsap.to(flame, {
+                opacity: 0,
+                scale: 0,
+                duration: 0.4,
+                ease: "power2.out"
+            });
+
+            // Trigger beautiful ambient wish celebration sparkles
+            confetti({
+                particleCount: 80,
+                spread: 60,
+                origin: { y: 0.6 },
+                colors: ['#a855f7', '#ffffff']
+            });
+
+            // Unveil the text input section for wishing
+            const wishPortal = document.getElementById('wish-portal');
+            wishPortal.classList.remove('hidden');
+            gsap.to(wishPortal, {
+                opacity: 1,
+                scale: 1,
+                duration: 0.8,
+                delay: 0.3,
+                ease: "power3.out"
+            });
+        }
+
+        function sendWish() {
+            const input = document.getElementById('wish-input');
+            const wishText = input.value.trim();
+            if (wishText === '') return;
+
+            playSound('wish');
+
+            // Side angle confetti burst
+            confetti({
+                particleCount: 40,
+                angle: 60,
+                spread: 55,
+                origin: { x: 0 },
+                colors: ['#a855f7', '#ffffff']
+            });
+            confetti({
+                particleCount: 40,
+                angle: 120,
+                spread: 55,
+                origin: { x: 1 },
+                colors: ['#6366f1', '#ffffff']
+            });
+
+            // Transition out input fields, reveal feedback
+            const wishPortal = document.getElementById('wish-portal');
+            const wishSuccess = document.getElementById('wish-success');
+
+            gsap.to(wishPortal, {
+                opacity: 0,
+                scale: 0.95,
+                duration: 0.5,
+                onComplete: () => {
+                    wishPortal.classList.add('hidden');
+                    wishSuccess.classList.remove('hidden');
+                    gsap.to(wishSuccess, {
+                        opacity: 1,
+                        duration: 0.6,
+                        ease: "power2.out"
+                    });
+                }
+            });
+        }
+
+
+        // ==========================================
+        // AMBIENT COSMIC BACKGROUND VECTOR SYSTEM
+        // ==========================================
+        const canvas = document.getElementById('ambient-canvas');
+        const ctx = canvas.getContext('2d');
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+
+        let stars = [];
+
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        });
+
+        class Star {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.size = Math.random() * 1.5 + 0.5;
+                this.speedX = (Math.random() - 0.5) * 0.15;
+                this.speedY = -Math.random() * 0.25 - 0.05;
+                this.alpha = Math.random() * 0.5 + 0.2;
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                // Infinite loop boundary wrap
+                if (this.y < -10) this.y = height + 10;
+                if (this.x < -10) this.x = width + 10;
+                if (this.x > width + 10) this.x = -10;
+            }
+
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.alpha;
+                ctx.fillStyle = '#a855f7';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        function initStars() {
+            stars = [];
+            for (let i = 0; i < 80; i++) {
+                stars.push(new Star());
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            stars.forEach(star => {
+                star.update();
+                star.draw();
+            });
+            requestAnimationFrame(animate);
+        }
+
+        initStars();
+        animate();
+    </script>
+</body>
+</html>
