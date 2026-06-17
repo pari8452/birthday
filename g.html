@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday!</title>
+    <!-- Google Fonts for typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #ffe4e1; /* Soft pastel pink background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .slide {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            width: 90%;
+            max-width: 480px;
+            background: white;
+            padding: 40px 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            animation: fadeIn 0.5s ease-in-out forwards;
+            position: relative;
+            z-index: 10;
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        h2 {
+            color: #d63031;
+            margin-bottom: 20px;
+            font-size: 22px;
+            line-height: 1.4;
+        }
+
+        /* Buttons and Inputs */
+        input[type="password"] {
+            padding: 12px 20px;
+            border-radius: 25px;
+            border: 2px solid #ffb8b8;
+            outline: none;
+            font-size: 16px;
+            margin-bottom: 20px;
+            width: 80%;
+            text-align: center;
+            transition: border-color 0.3s;
+        }
+
+        input[type="password"]:focus {
+            border-color: #ff7597;
+        }
+
+        button {
+            padding: 12px 28px;
+            border-radius: 25px;
+            border: none;
+            background-color: #ff7597;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+            box-shadow: 0 4px 10px rgba(255, 117, 151, 0.3);
+        }
+
+        button:hover {
+            background-color: #ff4d79;
+            transform: translateY(-2px);
+        }
+
+        /* Slide 2 Specific Styling */
+        .btn-group {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+            position: relative;
+            width: 100%;
+            justify-content: center;
+        }
+
+        #noBtn {
+            background-color: #b2bec3;
+            box-shadow: none;
+            z-index: 1000;
+        }
+
+        #noBtn:hover {
+            background-color: #636e72;
+        }
+
+        /* Slide 3 - Cake Styling */
+        .cake-container {
+            position: relative;
+            margin: 40px auto;
+            width: 240px;
+            height: 150px;
+        }
+
+        .cake {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 90px;
+            background: #ffeaa7; /* Cake sponge base */
+            border-radius: 10px 10px 0 0;
+            box-shadow: 0 4px #fdcb6e;
+        }
+
+        .layer-middle {
+            position: absolute;
+            bottom: 30px;
+            left: 0;
+            width: 100%;
+            height: 15px;
+            background: #ff7597; /* Strawberry icing layer */
+        }
+
+        .layer-bottom {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 30px;
+            background: #fdcb6e;
+            border-radius: 0 0 10px 10px;
+        }
+
+        /* Candles */
+        .candles-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .candle {
+            position: absolute;
+            width: 6px;
+            height: 30px;
+            background: linear-gradient(to top, #ff7675, #ffeaa7);
+            border-radius: 3px;
+            pointer-events: auto;
+            cursor: pointer;
+        }
+
+        .flame {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 8px;
+            height: 12px;
+            background: radial-gradient(circle, #ff9f43, #ff3838);
+            border-radius: 50% 50% 20% 20%;
+            animation: flicker 0.1s infinite alternate;
+        }
+
+        .flame.extinguished {
+            display: none;
+        }
+
+        @keyframes flicker {
+            0% { transform: translateX(-50%) scale(1); }
+            100% { transform: translateX(-50%) scale(1.1) rotate(2deg); }
+        }
+
+        /* Slide 4 - Balloon Area */
+        #balloonArea {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: auto;
+            z-index: 5;
+            display: none;
+            overflow: hidden;
+        }
+
+        .balloon {
+            position: absolute;
+            width: 55px;
+            height: 70px;
+            border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
+            cursor: pointer;
+            z-index: 10;
+            animation: floatUp 8s linear infinite;
+        }
+
+        .balloon-string {
+            position: absolute;
+            bottom: -22px;
+            left: 50%;
+            width: 2px;
+            height: 25px;
+            background: #b2bec3;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(110vh) rotate(0deg); }
+            100% { transform: translateY(-20vh) rotate(15deg); }
+        }
+
+        .balloon.pop {
+            transform: scale(0);
+            transition: transform 0.15s ease-out;
+            pointer-events: none;
+        }
+
+        .pop-text {
+            position: fixed;
+            color: #d63031;
+            font-size: 14px;
+            font-weight: bold;
+            pointer-events: none;
+            animation: fadeUpText 1s ease-out forwards;
+            z-index: 100;
+        }
+
+        @keyframes fadeUpText {
+            0% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-60px); }
+        }
+
+        /* Slide 5 - Envelope / Letter */
+        .envelope-wrapper {
+            cursor: pointer;
+            transition: transform 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .envelope-wrapper:hover {
+            transform: scale(1.05);
+        }
+
+        .envelope {
+            position: relative;
+            width: 200px;
+            height: 130px;
+            background: #fab1a0;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        }
+
+        .envelope .flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            border-left: 100px solid transparent;
+            border-right: 100px solid transparent;
+            border-top: 70px solid #ff7675;
+            transform-origin: top;
+            transition: transform 0.4s ease;
+            z-index: 3;
+        }
+
+        .envelope .pocket {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            border-left: 100px solid #fd79a8;
+            border-right: 100px solid #fd79a8;
+            border-bottom: 65px solid #fd79a8;
+            border-top: 65px solid transparent;
+            border-radius: 0 0 10px 10px;
+            z-index: 2;
+        }
+
+        .envelope .letter-preview {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            width: 170px;
+            height: 90px;
+            z-index: 1;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+            color: #e84393;
+            transition: transform 0.4s ease;
+        }
+
+        .envelope.open .flap {
+            transform: rotateX(180deg);
+            z-index: 1;
+        }
+
+        .envelope.open .letter-preview {
+            transform: translate(-50%, -50px);
+            z-index: 4;
+        }
+
+        /* Large Heart Message Box */
+        .heart-container {
+            position: relative;
+            width: 320px;
+            height: 300px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            margin: 20px auto;
+            transform: scale(0);
+            opacity: 0;
+        }
+
+        .heart-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            filter: drop-shadow(0 10px 20px rgba(214, 48, 49, 0.4));
+            animation: pulse 1.2s infinite alternate;
+        }
+
+        .heart-message {
+            position: relative;
+            z-index: 2;
+            color: white;
+            font-family: 'Dancing Script', cursive;
+            font-size: 18px;
+            text-align: center;
+            padding: 30px;
+            line-height: 1.5;
+            max-width: 250px;
+            margin-top: -15px;
+            animation: pulseText 1.2s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.04); }
+        }
+
+        @keyframes pulseText {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.02); }
+        }
+
+        /* Confetti elements */
+        .confetti {
+            position: fixed;
+            top: -20px;
+            z-index: 1000;
+            pointer-events: none;
+            opacity: 0.8;
+            animation: fall 5s linear infinite;
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(0) rotate(0deg); }
+            100% { transform: translateY(110vh) rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Slide 1: Password Input -->
+    <div id="slide1" class="slide active">
+        <h2>Enter the Secret Password 🔒</h2>
+        <input type="password" id="passwordInput" placeholder="Enter password here..." />
+        <button onclick="checkPassword()">Unlock Magic</button>
+    </div>
+
+    <!-- Slide 2: The Question -->
+    <div id="slide2" class="slide">
+        <h2>tum mujhseee pyaarr krteee hoo? 🥺</h2>
+        <div class="btn-group">
+            <button id="yesBtn" onclick="nextSlide(2, 3)">Yes ❤️</button>
+            <button id="noBtn" onmouseover="repelButton()" onclick="repelButton()">No 😢</button>
+        </div>
+    </div>
+
+    <!-- Slide 3: The Cake and 21 Candles -->
+    <div id="slide3" class="slide">
+        <h2>Blow out all the 21 candles! 🎂</h2>
+        <p style="font-size: 14px; color: #636e72;">(Click each flame to blow it out)</p>
+        
+        <div class="cake-container">
+            <div class="candles-container" id="candlesContainer"></div>
+            <div class="cake">
+                <div class="layer-middle"></div>
+                <div class="layer-bottom"></div>
+            </div>
+        </div>
+
+        <div id="candleCounter" style="font-weight: 600; color: #ff7597; margin-top: 15px;">
+            Candles blown: 0 / 21
+        </div>
+    </div>
+
+    <!-- Slide 4: 21 Balloons Popping -->
+    <div id="slide4" class="slide">
+        <h2>Pop 21 balloons to find your surprise! 🎈</h2>
+        <p style="font-size: 14px; color: #636e72;">(Tap the floating balloons)</p>
+        <div id="balloonCounter" style="font-weight: 600; color: #ff7597; margin-top: 15px;">
+            Balloons popped: 0 / 21
+        </div>
+    </div>
+
+    <!-- Floating Balloon Overlay for Slide 4 -->
+    <div id="balloonArea"></div>
+
+    <!-- Slide 5: The Final Letter Envelope -->
+    <div id="slide5" class="slide">
+        <div class="envelope-wrapper" id="envelopeWrapper" onclick="openEnvelope()">
+            <div class="envelope">
+                <div class="flap"></div>
+                <div class="pocket"></div>
+                <div class="letter-preview">❤️ Tap to open</div>
+            </div>
+            <p style="margin-top: 25px; font-weight: 600; color: #ff7597; font-size: 15px;">
+                You popped them all! Here is your letter 💌
+            </p>
+        </div>
+
+        <!-- Glowing Heart Message -->
+        <div class="heart-container" id="heartLetter">
+            <svg class="heart-bg" viewBox="0 0 32 29.6">
+                <path d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,9.5,11.9,16,21.2
+                c6.1-9.3,16-12.1,16-21.2C32,3.8,28.2,0,23.6,0z" fill="#ff4d4d"/>
+            </svg>
+            <div class="heart-message">
+                happyy birthdayyy tooo youuu babyyy girlll i wishhh jo jo tumhe chahiyee sab mil jaayeee aur tum hamesha hameshaa happyy rahoooo ❤️
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Transition Helper function
+        function nextSlide(current, next) {
+            document.getElementById(`slide${current}`).classList.remove('active');
+            document.getElementById(`slide${next}`).classList.add('active');
+            
+            if (next === 3) {
+                initCandles();
+            }
+            if (next === 4) {
+                initBalloons();
+            }
+        }
+
+        // Slide 1 validation
+        function checkPassword() {
+            const input = document.getElementById('passwordInput').value;
+            if (input === '08072005') {
+                nextSlide(1, 2);
+            } else {
+                alert('Oops! Incorrect passcode. Try again! ❤️');
+            }
+        }
+
+        // Slide 2 Repelling Logic
+        function repelButton() {
+            const noBtn = document.getElementById('noBtn');
+            // Offset boundaries so the button remains within comfortable viewport borders
+            const maxX = window.innerWidth - noBtn.offsetWidth - 30;
+            const maxY = window.innerHeight - noBtn.offsetHeight - 30;
+
+            const randomX = Math.max(15, Math.floor(Math.random() * maxX));
+            const randomY = Math.max(15, Math.floor(Math.random() * maxY));
+
+            noBtn.style.position = 'fixed';
+            noBtn.style.left = `${randomX}px`;
+            noBtn.style.top = `${randomY}px`;
+        }
+
+        // Slide 3 Candle Logic
+        function initCandles() {
+            const container = document.getElementById('candlesContainer');
+            container.innerHTML = '';
+            let blownCandles = 0;
+            const totalCandles = 21;
+
+            for (let i = 0; i < totalCandles; i++) {
+                const candle = document.createElement('div');
+                candle.className = 'candle';
+
+                // Distribute candles symmetrically in 2 staggered rows on top of cake
+                let left, top;
+                if (i < 11) {
+                    left = 10 + (i * 7.5); // Row 1 Front
+                    top = 10;
+                } else {
+                    left = 14 + ((i - 11) * 7.5); // Row 2 Back
+                    top = -5;
+                }
+
+                candle.style.left = `${left}%`;
+                // Cake height starts at 90px relative to bottom container bounds
+                candle.style.bottom = `${90 + top}px`;
+
+                const flame = document.createElement('div');
+                flame.className = 'flame';
+                candle.appendChild(flame);
+
+                candle.addEventListener('click', () => {
+                    if (!flame.classList.contains('extinguished')) {
+                        flame.classList.add('extinguished');
+                        blownCandles++;
+                        document.getElementById('candleCounter').innerText = `Candles blown: ${blownCandles} / 21`;
+                        
+                        if (blownCandles === totalCandles) {
+                            setTimeout(() => {
+                                nextSlide(3, 4);
+                            }, 1200);
+                        }
+                    }
+                });
+
+                container.appendChild(candle);
+            }
+        }
+
+        // Slide 4 Balloon Logic
+        function initBalloons() {
+            const balloonArea = document.getElementById('balloonArea');
+            balloonArea.style.display = 'block';
+            balloonArea.innerHTML = '';
+            let poppedCount = 0;
+            const colors = ['#ff7675', '#fd79a8', '#ffeaa7', '#a29bfe', '#81ecec', '#ffb8b8'];
+
+            for (let i = 0; i < 21; i++) {
+                const balloon = document.createElement('div');
+                balloon.className = 'balloon';
+                balloon.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                
+                // Keep them dispersed across the viewport
+                balloon.style.left = `${5 + Math.random() * 85}%`;
+                
+                // Add staggered animation delay so they float up at different times
+                const delay = Math.random() * 6;
+                balloon.style.animationDelay = `${delay}s`;
+
+                // Add physical string
+                const string = document.createElement('div');
+                string.className = 'balloon-string';
+                balloon.appendChild(string);
+
+                balloon.addEventListener('click', (e) => {
+                    if (!balloon.classList.contains('pop')) {
+                        balloon.classList.add('pop');
+                        createPoppingText(e.clientX, e.clientY);
+                        poppedCount++;
+                        document.getElementById('balloonCounter').innerText = `Balloons popped: ${poppedCount} / 21`;
+
+                        setTimeout(() => {
+                            balloon.remove();
+                        }, 150);
+
+                        if (poppedCount === 21) {
+                            setTimeout(() => {
+                                balloonArea.style.display = 'none';
+                                nextSlide(4, 5);
+                            }, 1200);
+                        }
+                    }
+                });
+
+                balloonArea.appendChild(balloon);
+            }
+        }
+
+        // Floating popup "happy birthdayyy" text
+        function createPoppingText(x, y) {
+            const textElement = document.createElement('div');
+            textElement.className = 'pop-text';
+            textElement.innerText = 'happy birthdayyy';
+            textElement.style.left = `${x}px`;
+            textElement.style.top = `${y}px`;
+            document.body.appendChild(textElement);
+            setTimeout(() => {
+                textElement.remove();
+            }, 1000);
+        }
+
+        // Slide 5 Envelope Animation
+        function openEnvelope() {
+            const envelope = document.querySelector('.envelope');
+            envelope.classList.add('open');
+            
+            setTimeout(() => {
+                document.getElementById('envelopeWrapper').style.display = 'none';
+                const heartLetter = document.getElementById('heartLetter');
+                heartLetter.style.display = 'flex';
+                
+                // Smooth scale-up and fade-in of the heart letter
+                setTimeout(() => {
+                    heartLetter.style.transform = 'scale(1)';
+                    heartLetter.style.opacity = '1';
+                    heartLetter.style.transition = 'transform 0.8s ease-out, opacity 0.8s ease-out';
+                    triggerConfetti();
+                }, 50);
+            }, 1500);
+        }
+
+        // Falling Sparkles & Confetti logic
+        function triggerConfetti() {
+            const colors = ['#ff7675', '#fd79a8', '#ffeaa7', '#a29bfe', '#fab1a0'];
+            for (let i = 0; i < 70; i++) {
+                const conf = document.createElement('div');
+                conf.className = 'confetti';
+                conf.style.left = `${Math.random() * 100}vw`;
+                conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                
+                const size = Math.random() * 10 + 6;
+                conf.style.width = `${size}px`;
+                conf.style.height = `${size}px`;
+                
+                // Stagger falling starts
+                conf.style.animationDelay = `${Math.random() * 4}s`;
+                conf.style.animationDuration = `${Math.random() * 3 + 3}s`;
+
+                // Give 50% circular dynamic shapes
+                if (Math.random() > 0.5) {
+                    conf.style.borderRadius = '50%';
+                }
+
+                document.body.appendChild(conf);
+
+                // Clean memory
+                setTimeout(() => {
+                    conf.remove();
+                }, 7000);
+            }
+        }
+    </script>
+</body>
+</html>
