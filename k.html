@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Royal Birthday of Prince Utkarsh</title>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cinzel:wght@400;700&family=Playfair+Display:ital,wght@0,400;1,700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #D4AF37;
+            --royal-blue: #002366;
+            --crimson: #8B0000;
+            --cream: #fdf5e6;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+
+        body {
+            background: radial-gradient(circle, var(--crimson), #200000);
+            font-family: 'Playfair Display', serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            color: var(--gold);
+        }
+
+        .screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 90%;
+            max-width: 800px;
+            text-align: center;
+            animation: fadeIn 1s ease-in;
+        }
+
+        .active { display: flex; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        h1 { font-family: 'Cinzel', serif; font-size: 3rem; margin-bottom: 20px; text-shadow: 2px 2px 10px rgba(0,0,0,0.5); }
+        h2 { font-family: 'Great Vibes', cursive; font-size: 2.5rem; color: var(--cream); }
+
+        input {
+            padding: 15px;
+            font-size: 1.2rem;
+            border-radius: 5px;
+            border: 2px solid var(--gold);
+            background: rgba(255,255,255,0.1);
+            color: white;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        button {
+            background: linear-gradient(to bottom, var(--gold), #b8860b);
+            color: #200000;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            font-family: 'Cinzel', serif;
+            cursor: pointer;
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transition: 0.3s;
+        }
+
+        button:hover { transform: scale(1.05); filter: brightness(1.2); }
+
+        /* --- Balloon Pop --- */
+        .game-area { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin-top: 20px; }
+        .balloon {
+            width: 60px; height: 80px; background: var(--gold); border-radius: 50%;
+            cursor: pointer; position: relative; transition: 0.2s;
+            box-shadow: inset -5px -5px 10px rgba(0,0,0,0.2);
+        }
+        .balloon::after { content: ''; position: absolute; bottom: -10px; left: 25px; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 10px solid var(--gold); }
+        .popped { transform: scale(0); opacity: 0; }
+
+        /* --- Candles Blow --- */
+        .candle-box { display: flex; gap: 10px; margin-top: 20px; }
+        .candle-item { width: 20px; height: 60px; background: var(--cream); position: relative; border-radius: 3px; cursor: pointer; }
+        .flame {
+            width: 12px; height: 18px; background: orange; border-radius: 50% 50% 20% 20%;
+            position: absolute; top: -15px; left: 4px; animation: flicker 0.1s infinite alternate;
+        }
+        @keyframes flicker { from { transform: scale(1); opacity: 0.8; } to { transform: scale(1.1); opacity: 1; } }
+        .blown .flame { display: none; }
+
+        /* --- Countdown --- */
+        #count { font-size: 15rem; font-family: 'Cinzel', serif; color: var(--gold); font-weight: bold; }
+
+        /* --- Royal Letter --- */
+        .letter {
+            background: #fdf5e6;
+            color: #200000;
+            padding: 40px;
+            border: 10px double var(--gold);
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+            max-width: 500px;
+            font-family: 'Playfair Display', serif;
+            position: relative;
+        }
+        .letter h2 { color: var(--crimson); }
+
+        /* --- Realistic Cake --- */
+        .cake-wrap { position: relative; width: 300px; height: 250px; margin-top: 50px; }
+        .cake-body { width: 250px; height: 150px; background: #4e342e; border-radius: 20px 20px 0 0; position: absolute; bottom: 0; left: 25px; border-bottom: 10px solid #2d1d19; }
+        .frosting { width: 250px; height: 40px; background: var(--cream); position: absolute; bottom: 140px; left: 25px; border-radius: 20px 20px 0 0; }
+        .cake-candles-grid {
+            display: grid; grid-template-columns: repeat(7, 1fr);
+            position: absolute; top: 0; width: 250px; left: 25px; gap: 5px;
+        }
+        .cake-candle { width: 8px; height: 30px; background: var(--gold); position: relative; }
+        .slice-cut { transform: translateX(50px) rotate(10deg); transition: 1s; }
+
+        /* --- Jumping Letters --- */
+        .jumping span { display: inline-block; animation: jump 0.6s infinite alternate; }
+        @keyframes jump { to { transform: translateY(-20px); } }
+
+        /* --- Final Hug --- */
+        .hug-anim { font-size: 10rem; animation: pulse 1s infinite; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+    </style>
+</head>
+<body>
+
+    <!-- Step 1: Birthday Question -->
+    <div id="step1" class="screen active">
+        <h1>Welcome, Prince Utkarsh</h1>
+        <h2>When is your birthday?</h2>
+        <input type="text" id="bdayInput" placeholder="Enter date...">
+        <button onclick="next('step2')">Proceed to Kingdom</button>
+    </div>
+
+    <!-- Step 2: Balloon Pop (Need 8) -->
+    <div id="step2" class="screen">
+        <h1>The Royal Celebration Begins</h1>
+        <h2>Pop 8 Gold Balloons!</h2>
+        <div class="game-area" id="balloonContainer"></div>
+        <button id="btn2" style="display:none; margin-top:20px;" onclick="next('step3')">Next Task</button>
+    </div>
+
+    <!-- Step 3: Candle Blow (Need 7) -->
+    <div id="step3" class="screen">
+        <h1>The Royal Banquet</h1>
+        <h2>Blow out 7 Candles!</h2>
+        <div class="candle-box" id="candleContainer"></div>
+        <button id="btn3" style="display:none; margin-top:20px;" onclick="next('step4')">Enter Fortress</button>
+    </div>
+
+    <!-- Step 4: Passcode -->
+    <div id="step4" class="screen">
+        <h1>Secure the Palace</h1>
+        <h2>Enter the Royal Passcode</h2>
+        <input type="password" id="passInput" placeholder="****">
+        <button onclick="checkPass()">Unlock</button>
+    </div>
+
+    <!-- Step 5: Countdown -->
+    <div id="step5" class="screen">
+        <div id="count">10</div>
+    </div>
+
+    <!-- Step 6: Royal Letter -->
+    <div id="step6" class="screen">
+        <div class="letter">
+            <p>From the Kingdom of Love...</p>
+            <h2 class="jumping" id="letterText"></h2>
+            <br>
+            <p>Today, the world celebrates a Prince.</p>
+            <button style="margin-top:20px;" onclick="next('step7')">Go to Cake Ceremony</button>
+        </div>
+    </div>
+
+    <!-- Step 7: Realistic Cake -->
+    <div id="step7" class="screen">
+        <h1>Make a Wish, Prince Utkarsh</h1>
+        <div class="cake-wrap">
+            <div id="cakeCandles" class="cake-candles-grid"></div>
+            <div class="frosting"></div>
+            <div class="cake-body" id="mainCake"></div>
+        </div>
+        <div id="cakeControls" style="margin-top: 30px;">
+            <p id="wishMsg">Blow the 21 candles first!</p>
+            <button id="cutBtn" style="display:none" onclick="cutCake()">Cut the Royal Cake 🔪</button>
+        </div>
+    </div>
+
+    <!-- Step 8: Final Hug -->
+    <div id="step8" class="screen">
+        <h1 class="jumping" id="finalText"></h1>
+        <div class="hug-anim">🫂❤️🤴</div>
+        <h2 style="color:var(--gold)">A warm, tight royal hug for you!</h2>
+    </div>
+
+    <script>
+        function next(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            if(id === 'step2') loadBalloons();
+            if(id === 'step3') loadCandles();
+            if(id === 'step6') startLetter();
+        }
+
+        // Balloons Logic
+        let pops = 0;
+        function loadBalloons() {
+            const container = document.getElementById('balloonContainer');
+            for(let i=0; i<10; i++) {
+                let b = document.createElement('div');
+                b.className = 'balloon';
+                b.onclick = function() {
+                    if(!this.classList.contains('popped')) {
+                        this.classList.add('popped');
+                        pops++;
+                        if(pops >= 8) document.getElementById('btn2').style.display = 'block';
+                    }
+                };
+                container.appendChild(b);
+            }
+        }
+
+        // Candles Logic
+        let blown = 0;
+        function loadCandles() {
+            const container = document.getElementById('candleContainer');
+            for(let i=0; i<10; i++) {
+                let c = document.createElement('div');
+                c.className = 'candle-item';
+                c.innerHTML = '<div class="flame"></div>';
+                c.onclick = function() {
+                    if(!this.classList.contains('blown')) {
+                        this.classList.add('blown');
+                        blown++;
+                        if(blown >= 7) document.getElementById('btn3').style.display = 'block';
+                    }
+                };
+                container.appendChild(c);
+            }
+        }
+
+        function checkPass() {
+            if(document.getElementById('passInput').value === '2005') {
+                startCountdown();
+            } else {
+                alert("Wrong Passcode, Prince!");
+            }
+        }
+
+        function startCountdown() {
+            next('step5');
+            let c = 10;
+            let timer = setInterval(() => {
+                c--;
+                document.getElementById('count').innerText = c;
+                if(c === 0) {
+                    clearInterval(timer);
+                    next('step6');
+                }
+            }, 1000);
+        }
+
+        function startLetter() {
+            const text = "happy birthdayyy babyy girlll"; 
+            const el = document.getElementById('letterText');
+            el.innerHTML = text.split('').map((l, i) => `<span style="animation-delay:${i*0.1}s">${l === ' ' ? '&nbsp;' : l}</span>`).join('');
+            
+            // Prepare cake for next step
+            loadCakeCandles();
+        }
+
+        // 21 Candles Logic
+        let cakeBlown = 0;
+        function loadCakeCandles() {
+            const grid = document.getElementById('cakeCandles');
+            for(let i=0; i<21; i++) {
+                let c = document.createElement('div');
+                c.className = 'cake-candle';
+                c.innerHTML = '<div class="flame"></div>';
+                c.onclick = function() {
+                    if(!this.classList.contains('blown')) {
+                        this.classList.add('blown');
+                        cakeBlown++;
+                        if(cakeBlown === 21) {
+                            document.getElementById('wishMsg').innerHTML = "Now make a wish... <br> ✨ <i>Prince Utkarsh wishes for happiness</i> ✨";
+                            document.getElementById('cutBtn').style.display = 'block';
+                        }
+                    }
+                };
+                grid.appendChild(c);
+            }
+        }
+
+        function cutCake() {
+            document.getElementById('mainCake').classList.add('slice-cut');
+            document.getElementById('wishMsg').innerText = "Feeding the cake to Prince Utkarsh... Aaaaamm! 🍰";
+            setTimeout(() => {
+                const final = document.getElementById('finalText');
+                final.innerHTML = "happyyy birthdayy Prince Utkarshhh".split('').map((l, i) => `<span style="animation-delay:${i*0.1}s">${l === ' ' ? '&nbsp;' : l}</span>`).join('');
+                next('step8');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
