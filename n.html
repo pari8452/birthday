@@ -3,563 +3,210 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Happy Birthday!</title>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>For Birthday Boy ❤️</title>
     <style>
-        * {
-            box-sizing: border-box;
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Dancing+Script:wght@700&display=swap');
+
+        body, html {
             margin: 0;
             padding: 0;
-            user-select: none;
-        }
-
-        body {
-            font-family: 'Fredoka', 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #feada6 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            text-align: center;
+            height: 100%;
+            width: 100%;
+            font-family: 'Poppins', sans-serif;
+            background-color: #ffeef2;
+            overflow: hidden; /* Prevent scrolling on final screen */
         }
 
         .screen {
             display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            width: 100vw;
             height: 100vh;
-            position: absolute;
-            top: 0;
-            left: 0;
-            padding: 20px;
-            z-index: 10;
-        }
-
-        .screen.active {
-            display: flex;
-        }
-
-        h1 {
-            color: #d63384;
-            font-size: 2.8rem;
-            margin-bottom: 25px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .btn-container {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
+            width: 100vw;
+            flex-direction: column;
             justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
         }
 
-        button {
-            background: linear-gradient(45deg, #ff4d6d, #ff758f);
+        .active {
+            display: flex;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(255, 77, 109, 0.2);
+            max-width: 600px;
+            width: 90%;
+        }
+
+        h1 { color: #ff4d6d; font-size: 1.5rem; }
+        
+        .btn-container {
+            margin-top: 20px;
+        }
+
+        .btn {
+            background-color: #ff4d6d;
             color: white;
             border: none;
-            padding: 16px 36px;
-            font-size: 1.3rem;
-            font-weight: 700;
+            padding: 12px 30px;
+            margin: 10px;
             border-radius: 50px;
             cursor: pointer;
-            box-shadow: 0 8px 20px rgba(255, 77, 109, 0.4);
-            transition: all 0.2s ease;
+            font-size: 16px;
+            font-weight: 600;
+            transition: 0.3s;
         }
 
-        button:hover {
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 12px 25px rgba(255, 77, 109, 0.6);
+        .btn:hover {
+            transform: scale(1.1);
+            background-color: #ff758f;
         }
 
-        button:active {
-            transform: translateY(1px);
+        /* Letter Styling */
+        #letterArea {
+            text-align: left;
+            font-size: 15px;
+            line-height: 1.8;
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 15px;
+            border: 2px solid #ffd1dc;
+            border-radius: 10px;
+            background: #fffafa;
+            margin-bottom: 20px;
+            color: #444;
         }
 
-        /* --- Countdown --- */
-        #countdown-timer {
-            font-size: 10rem;
-            font-weight: 800;
-            color: #ff2a5f;
-            text-shadow: 4px 4px 15px rgba(0,0,0,0.15);
-            animation: pulse 1s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-
-        /* --- Cake Section --- */
-        .cake-wrapper {
-            position: relative;
-            width: 320px;
-            height: 320px;
-            margin: 20px 0;
-        }
-
-        svg.cake-svg {
-            width: 100%;
-            height: 100%;
-            overflow: visible;
-        }
-
-        .slice {
-            transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1);
-            transform-origin: 150px 150px;
-            cursor: pointer;
-        }
-
-        /* Cutting 6 Slices outwards radial offset */
-        .cut-active #slice-1 { transform: translate( 15px, -25px); }
-        .cut-active #slice-2 { transform: translate( 30px,   0px); }
-        .cut-active #slice-3 { transform: translate( 15px,  25px); }
-        .cut-active #slice-4 { transform: translate(-15px,  25px); }
-        .cut-active #slice-5 { transform: translate(-30px,   0px); }
-        .cut-active #slice-6 { transform: translate(-15px, -25px); }
-
-        .knife {
-            position: absolute;
-            top: -50px;
-            right: 20px;
-            font-size: 4rem;
-            transition: all 0.8s ease-in-out;
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .knife.cutting {
-            opacity: 1;
-            top: 100px;
-            right: 120px;
-            transform: rotate(-45deg) scale(1.2);
-        }
-
-        .fed-piece {
-            position: absolute;
-            width: 80px;
-            height: 80px;
-            top: 110px;
-            left: 110px;
-            opacity: 0;
-            transition: all 1.5s ease-in-out;
-            pointer-events: none;
-            z-index: 20;
-        }
-
-        .fed-piece.feeding {
-            opacity: 1;
-            transform: scale(2.2) translateY(-120px);
-        }
-
-        /* --- Tic Tac Toe --- */
-        .ttt-board {
-            display: grid;
-            grid-template-columns: repeat(3, 100px);
-            grid-template-rows: repeat(3, 100px);
-            gap: 12px;
-            margin: 20px 0;
-        }
-
-        .ttt-cell {
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 15px;
+        /* JUMPING LETTERS ANIMATION */
+        .jumping-container {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3rem;
-            font-weight: bold;
-            color: #ff4d6d;
-            box-shadow: 0 6px 15px rgba(0,0,0,0.08);
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .ttt-cell:hover {
-            background: #ffffff;
-        }
-
-        /* --- Jumping Text --- */
-        .jumping-text {
-            display: flex;
-            justify-content: center;
             flex-wrap: wrap;
-            margin-bottom: 30px;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100vh;
+            background: #ff4d6d; /* Contrast background for final screen */
+            color: white;
+            padding: 20px;
         }
 
-        .jumping-text span {
+        .jump-wrapper {
+            font-size: 2.5rem;
+            font-weight: bold;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            line-height: 1.2;
+        }
+
+        .letter {
             display: inline-block;
-            font-size: 3.5rem;
-            font-weight: 700;
-            color: #d63384;
-            text-shadow: 3px 3px 6px rgba(0,0,0,0.15);
-            animation: jump 0.6s infinite alternate;
+            animation: jump 0.6s ease-in-out infinite alternate;
         }
 
         @keyframes jump {
             0% { transform: translateY(0); }
-            100% { transform: translateY(-25px); }
+            100% { transform: translateY(-30px); }
         }
 
-        /* --- Kisses & Hugs --- */
-        .kiss-mark {
-            position: fixed;
-            font-size: 4rem;
-            z-index: 999;
-            pointer-events: none;
-            animation: kissPop 0.8s ease-out forwards;
+        .emoji-span {
+            font-size: 1.5rem;
+            display: inline-block;
+            animation: jump 0.6s ease-in-out infinite alternate-reverse;
         }
 
-        @keyframes kissPop {
-            0% { transform: scale(0) rotate(-20deg); opacity: 0; }
-            50% { transform: scale(1.3) rotate(10deg); opacity: 1; }
-            100% { transform: scale(1) rotate(0deg); opacity: 0.9; }
-        }
+        /* Custom Scrollbar */
+        #letterArea::-webkit-scrollbar { width: 6px; }
+        #letterArea::-webkit-scrollbar-thumb { background: #ff4d6d; border-radius: 10px; }
 
-        .hug-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(255, 105, 180, 0.3);
-            backdrop-filter: blur(5px);
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            animation: fadeIn 1s forwards;
-        }
-
-        .hug-overlay h1 {
-            font-size: 4rem;
-            color: #ffffff;
-            text-shadow: 0 0 20px #ff0055;
-        }
-
-        .hug-emoji {
-            font-size: 8rem;
-            animation: pulse 1s infinite;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
     </style>
 </head>
 <body>
 
-    <!-- Background Audio -->
-    <audio id="bgSong" loop>
-        <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a73223.mp3?filename=happy-birthday-155461.mp3" type="audio/mpeg">
-    </audio>
-
-    <!-- STEP 1: Question 1 -->
-    <div id="step-1" class="screen active">
-        <h1>Are you the birthday boy? 👑</h1>
-        <div class="btn-container">
-            <button onclick="handleQ1(true)">Yes!</button>
-            <button onclick="handleQ1(false)">No</button>
-        </div>
-    </div>
-
-    <!-- STEP 1.5: Liar Screen -->
-    <div id="step-liar" class="screen">
-        <h1>jhooteee kahike 😡</h1>
-        <p style="font-size: 1.5rem; margin-bottom: 20px; color: #555;">Don't lie to me!</p>
-        <button onclick="showScreen('step-1')">Go Back 🔄</button>
-    </div>
-
-    <!-- STEP 2: Question 2 -->
-    <div id="step-2" class="screen">
-        <h1>are youuu readyy for birthdayy partyyy? 🎉</h1>
-        <div class="btn-container">
-            <button onclick="startParty()">Yess! 🥳</button>
-            <button onclick="startParty()">Yessss!! 💃</button>
-        </div>
-    </div>
-
-    <!-- STEP 3: Countdown -->
-    <div id="step-countdown" class="screen">
-        <div id="countdown-timer">10</div>
-    </div>
-
-    <!-- STEP 4: Realistic Cake Cutting -->
-    <div id="step-cake" class="screen">
-        <h1 id="cake-instruction">Ask Birthday Boy to cut the cake! 🎂</h1>
-        
-        <div class="cake-wrapper" id="cakeWrapper">
-            <div class="knife" id="knife">🔪</div>
-            <div class="fed-piece" id="fedPiece">
-                <svg viewBox="0 0 300 300">
-                    <path d="M 150 150 L 270 150 A 120 120 0 0 1 210 253.9 Z" fill="#ff4d6d" stroke="#ffffff" stroke-width="3"/>
-                </svg>
+    <!-- SCREEN 1: THE QUESTION -->
+    <div id="screen1" class="screen active">
+        <div class="card">
+            <h1>jannna chhate hoo andr kya haii? 🫣</h1>
+            <div class="btn-container">
+                <button class="btn" onclick="showScreen('screen2')">Yes</button>
+                <button class="btn" onmouseover="moveNo(this)" onclick="alert('Arre No kyu click kr rhe ho! Yes dabao 😤')">No</button>
             </div>
-
-            <!-- Realistic 6-Slice SVG Cake -->
-            <svg class="cake-svg" viewBox="0 0 300 300" id="cakeSvg">
-                <defs>
-                    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
-                        <feDropShadow dx="0" dy="8" stdDeviation="6" flood-opacity="0.2"/>
-                    </filter>
-                    <linearGradient id="frosting" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stop-color="#ff758f"/>
-                        <stop offset="100%" stop-color="#ff4d6d"/>
-                    </linearGradient>
-                </defs>
-
-                <!-- Base Shadow -->
-                <circle cx="150" cy="150" r="130" fill="rgba(0,0,0,0.1)" />
-
-                <!-- 6 SVG Wedge Slices -->
-                <!-- Slice 1 (0° to 60°) -->
-                <g id="slice-1" class="slice">
-                    <path d="M 150 150 L 270 150 A 120 120 0 0 1 210 253.9 Z" fill="url(#frosting)" stroke="#fff" stroke-width="3" filter="url(#shadow)"/>
-                    <circle cx="210" cy="180" r="8" fill="#fff" />
-                </g>
-                <!-- Slice 2 (60° to 120°) -->
-                <g id="slice-2" class="slice">
-                    <path d="M 150 150 L 210 253.9 A 120 120 0 0 1 90 253.9 Z" fill="url(#frosting)" stroke="#fff" stroke-width="3" filter="url(#shadow)"/>
-                    <circle cx="150" cy="220" r="8" fill="#fff" />
-                </g>
-                <!-- Slice 3 (120° to 180°) -->
-                <g id="slice-3" class="slice">
-                    <path d="M 150 150 L 90 253.9 A 120 120 0 0 1 30 150 Z" fill="url(#frosting)" stroke="#fff" stroke-width="3" filter="url(#shadow)"/>
-                    <circle cx="90" cy="180" r="8" fill="#fff" />
-                </g>
-                <!-- Slice 4 (180° to 240°) -->
-                <g id="slice-4" class="slice">
-                    <path d="M 150 150 L 30 150 A 120 120 0 0 1 90 46.1 Z" fill="url(#frosting)" stroke="#fff" stroke-width="3" filter="url(#shadow)"/>
-                    <circle cx="90" cy="120" r="8" fill="#fff" />
-                </g>
-                <!-- Slice 5 (240° to 300°) -->
-                <g id="slice-5" class="slice">
-                    <path d="M 150 150 L 90 46.1 A 120 120 0 0 1 210 46.1 Z" fill="url(#frosting)" stroke="#fff" stroke-width="3" filter="url(#shadow)"/>
-                    <circle cx="150" cy="80" r="8" fill="#fff" />
-                </g>
-                <!-- Slice 6 (300° to 360°) -->
-                <g id="slice-6" class="slice">
-                    <path d="M 150 150 L 210 46.1 A 120 120 0 0 1 270 150 Z" fill="url(#frosting)" stroke="#fff" stroke-width="3" filter="url(#shadow)"/>
-                    <circle cx="210" cy="120" r="8" fill="#fff" />
-                </g>
-
-                <!-- Center Candle -->
-                <circle cx="150" cy="150" r="18" fill="#ffb703" />
-                <rect x="146" y="120" width="8" height="30" fill="#ffffff" rx="3"/>
-                <path d="M 150 105 Q 155 115 150 120 Q 145 115 150 105 Z" fill="#ff4800"/>
-            </svg>
-        </div>
-
-        <button id="cutCakeBtn" onclick="triggerCakeCut()">Cut the Cake 🔪</button>
-    </div>
-
-    <!-- STEP 5: Rigged Tic Tac Toe -->
-    <div id="step-game" class="screen">
-        <h1 style="font-size: 2.2rem;">Win Tic-Tac-Toe to get your message! 🎮</h1>
-        <div class="ttt-board" id="board">
-            <div class="ttt-cell" onclick="userMove(0)"></div>
-            <div class="ttt-cell" onclick="userMove(1)"></div>
-            <div class="ttt-cell" onclick="userMove(2)"></div>
-            <div class="ttt-cell" onclick="userMove(3)"></div>
-            <div class="ttt-cell" onclick="userMove(4)"></div>
-            <div class="ttt-cell" onclick="userMove(5)"></div>
-            <div class="ttt-cell" onclick="userMove(6)"></div>
-            <div class="ttt-cell" onclick="userMove(7)"></div>
-            <div class="ttt-cell" onclick="userMove(8)"></div>
-        </div>
-        <p id="gameStatus" style="font-size: 1.2rem; color: #d63384; font-weight: bold;">Your Turn (X)!</p>
-    </div>
-
-    <!-- STEP 6: Jumping "happyyy birthdayy" -->
-    <div id="step-hbday" class="screen">
-        <div class="jumping-text" id="hbday-text"></div>
-        <button onclick="showLoveScreen()">Next ➡️</button>
-    </div>
-
-    <!-- STEP 7: Jumping "i loveee u sooo muchh" & Kiss Question -->
-    <div id="step-love" class="screen">
-        <div class="jumping-text" id="love-text"></div>
-        
-        <div id="kissQuestionArea" style="margin-top: 20px;">
-            <h2 style="color: #ff2a5f; margin-bottom: 20px; font-size: 2rem;">do you want kissii andd hugg? 🥺❤️</h2>
-            <button onclick="startKissesAndHugs()">Yesss! 😘</button>
         </div>
     </div>
 
-    <!-- Final Hug Overlay -->
-    <div class="hug-overlay" id="hugOverlay">
-        <div class="hug-emoji">🤗🤗🤗</div>
-        <h1>Sending Huge Warm Hugs!</h1>
-        <p style="font-size: 2rem; color: #fff; margin-top: 15px;">Happy Birthday My Special Person! ❤️✨</p>
+    <!-- SCREEN 2: THE LETTER -->
+    <div id="screen2" class="screen">
+        <div class="card">
+            <div id="letterArea">
+                haappiesstt birthdayyy babbyy girrlll😘😘😘😘😘😘ummm mujhe samjh nhi aaya ki mai tumhe or kya du kyukiii aaj tumhara birthdayy haii naa to maine sochha mai na tumahre upar ek paragraph likhti hu wo dungi tumhee tooo na mtlbbb hum sath rehte hue 2 saal almost ho gaya hai is mahine ki 10 ko 1 saal 9 mahineee ho jayega aur u knoww tumm na badee speciall hoo yrrr mummy ksm see tum jaise bhi ho pata nhi kyu psnd ho aur chahe mai gussa rahu ya tum gussa rahoo mai tumhe kabhi call pe dekhti hu na to lagta hai kitna cute lag rha hai saara gussa wahi nikal jaata hai ksm se mummy ksmm se ha mana ki mai na gusse mai kuch bhi bol deti hu wo baate kabhi seriously mt liya kro mujhe nhi samjh aata gusse mai kya kisko nhi bolne chahiye kya bolna chahiye ya kya nhi bolna chahiyee . to na us baat ko seriously mt liya kroo samjheee aur ha mujhe mummy ksm se tumhare gussa karne se tumhare shaq krne se rokne se tokne se na kabhi koi problem nhi hoti thi na hogi kyuki na meri mummy papa bhi krte hai to jab tak koi shaq ya gussa nhi krta mujh pe na meri akal tikane nhi aati mai chahtii hu mujh pe koi gussa kre rok toke mujhe bohot achha lagta hai mummy ksm se . or ha dara mt kro ki mai tumhe chod dungi mai kabhi nhi jaungi mtlb iska mtlb ye nhi ki kuch esa kr dena ki jabardasti mujhe jaana pade samjh gyee warnaa pit dungii bata rhi huu . tumhara bdayy na bohot achha lagta hai mujhhee aaj koshish ki hai tumhe khush krne ki tumhee special feel krwane ki pata nhi kr pai ya nhi agr nhi kr pai to im really sorryy jab pass aaoge na tab sab tumhee kharid ke laa kar dungii sab kuch . or tumhe meri jh se hurt hota hai pareshan hote ho uske liye sorryy mai kabhi tumhe hurt nhi krna chahti bas wo ho jaata hai mujhe .u knoww yrr pata nhi kyuu but i reallyyy really lovee uuu . mtlb na meri life mai pheli baar kisi se mai itna jyda connect hui hu ab tumhari life ka nhi pata but meri life mai pheli baar itna kisi se connect ki wo bhi usse jisse aaj tak mili bhi nhi jiska cehra saamne se kabhi dekha bhi nhii ab ho gyi mai connect tumsee wo bhi bohot jyada itna ki agr tum agr tum jaa kar bhi wapas aaoge na tab bhi reh lungi sath tumhare kashh humm pass hotee . bas kuch mahinee aur fir hum milenge aur mai tumharii harr wishh purii karungiii har ek wishh tumhe jo chahiye hogaa sab bata dena mai sab dila dungii tumhe . tumhe koi bhi problem hogi to bata dena tumhe koi baat hi batani ho ki aaj kaisa feel kr rhe ho to agr mai na bhi rahu online to bol diya kro jab aaungi na achhe se samjh kee tumse baat krungi tumhari baat samjhungiii samjhe gyye aur ha zara na khana wana davai wavai time pe le liya kroo tabiyat na kharab kiya kroo warna milne kaise aaogee i hopee ki tumne aaj ka din enjoy kiya ho pata nhi utna special bana pai ya nhi but koshish ki hai aaj ka tumhara din special banane ki agr nhi bana pai to sorrryy ha bachhii samjh ke maaf kr dena .
+            </div>
+            <button class="btn" onclick="startFinalAnimation()">Next ❤️</button>
+        </div>
+    </div>
+
+    <!-- SCREEN 3: FULL SCREEN JUMPING TEXT -->
+    <div id="screen3" class="screen">
+        <div class="jumping-container">
+            <div id="finalMessage" class="jump-wrapper"></div>
+        </div>
     </div>
 
     <script>
-        const song = document.getElementById('bgSong');
-
         function showScreen(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
         }
 
-        function handleQ1(isBoy) {
-            if (isBoy) {
-                showScreen('step-2');
-            } else {
-                showScreen('step-liar');
-            }
+        // Just a fun "No" button move
+        function moveNo(btn) {
+            btn.style.position = 'absolute';
+            btn.style.top = Math.random() * 80 + 'vh';
+            btn.style.left = Math.random() * 80 + 'vw';
         }
 
-        function startParty() {
-            // Start Audio playback on user click
-            song.play().catch(e => console.log("Audio play allowed on user action"));
+        function startFinalAnimation() {
+            showScreen('screen3');
+            const container = document.getElementById('finalMessage');
             
-            showScreen('step-countdown');
-            let count = 10;
-            const timerEl = document.getElementById('countdown-timer');
+            const line1 = "byeeee good night sweet dreams take careee";
+            const line2 = "i reallyyyy reallyyy reallyy loveee uuu birthdayyy boyy";
+            const emojis = "😘😘😘😘😘😘😘😘😘😘😘😘😘😘😘😘😘😘😘😘😘😘😘😘😘😘😘😘😘😘😘😘😘😘😘😘😘😘😘😘😘😘😘😘😘😘😘😘😘";
+
+            const fullText = line1 + " <br><br> " + line2 + " <br><br> " + emojis;
             
-            const interval = setInterval(() => {
-                count--;
-                timerEl.innerText = count;
-                if (count <= 0) {
-                    clearInterval(interval);
-                    showScreen('step-cake');
+            // We create spans for each character to animate them
+            // Using a simpler approach to handle the HTML break tags
+            let htmlContent = "";
+            let delay = 0;
+
+            // Helper to add letters
+            function addText(text) {
+                for (let char of text) {
+                    if (char === " ") {
+                        htmlContent += `<span style="margin-right:10px;"></span>`;
+                    } else {
+                        htmlContent += `<span class="letter" style="animation-delay:${delay}s">${char}</span>`;
+                        delay += 0.05;
+                    }
                 }
-            }, 1000);
-        }
-
-        // Realistic Cake Cutting & Feeding
-        function triggerCakeCut() {
-            const knife = document.getElementById('knife');
-            const cakeWrapper = document.getElementById('cakeWrapper');
-            const cutBtn = document.getElementById('cutCakeBtn');
-            const instruction = document.getElementById('cake-instruction');
-
-            cutBtn.style.display = 'none';
-            knife.classList.add('cutting');
-
-            setTimeout(() => {
-                knife.style.opacity = '0';
-                cakeWrapper.classList.add('cut-active');
-                instruction.innerText = "Yummm! 6 slices cut! 🍰";
-
-                // Trigger Feeding Sequence
-                setTimeout(() => {
-                    instruction.innerText = "Feeding the Birthday Boy... Open your mouth! 😮🍰";
-                    const fedPiece = document.getElementById('fedPiece');
-                    fedPiece.classList.add('feeding');
-
-                    setTimeout(() => {
-                        instruction.innerText = "Aaaamm! So sweet! Now let's play a game! 🎮";
-                        setTimeout(() => {
-                            showScreen('step-game');
-                        }, 2000);
-                    }, 1800);
-
-                }, 1200);
-
-            }, 800);
-        }
-
-        // Rigged Tic Tac Toe (Guarantees User Wins)
-        let tttBoard = ["", "", "", "", "", "", "", "", ""];
-        let isGameActive = true;
-
-        function userMove(index) {
-            if (tttBoard[index] === "" && isGameActive) {
-                tttBoard[index] = "X";
-                const cells = document.getElementsByClassName('ttt-cell');
-                cells[index].innerText = "X";
-
-                if (checkTTTWin("X")) {
-                    document.getElementById('gameStatus').innerText = "YOU WON! 🎉";
-                    isGameActive = false;
-                    setTimeout(initCelebration, 1500);
-                    return;
-                }
-
-                document.getElementById('gameStatus').innerText = "Thinking...";
-                setTimeout(aiMove, 400);
             }
-        }
 
-        function aiMove() {
-            if (!isGameActive) return;
+            addText(line1);
+            htmlContent += "<br><br>";
+            addText(line2);
+            htmlContent += "<br><br>";
             
-            // Dumb AI: Picks first empty spot without trying to win or block
-            let emptyIndices = tttBoard.map((v, i) => v === "" ? i : null).filter(v => v !== null);
-            if (emptyIndices.length > 0) {
-                let aiChoice = emptyIndices[0]; 
-                tttBoard[aiChoice] = "O";
-                document.getElementsByClassName('ttt-cell')[aiChoice].innerText = "O";
-                document.getElementById('gameStatus').innerText = "Your Turn (X)!";
+            // Add emojis separately for different animation style
+            for (let emoji of emojis) {
+                htmlContent += `<span class="emoji-span" style="animation-delay:${delay}s">${emoji}</span>`;
+                delay += 0.02;
             }
-        }
 
-        function checkTTTWin(player) {
-            const wins = [
-                [0,1,2], [3,4,5], [6,7,8],
-                [0,3,6], [1,4,7], [2,5,8],
-                [0,4,8], [2,4,6]
-            ];
-            return wins.some(cond => cond.every(idx => tttBoard[idx] === player));
-        }
-
-        // Jumping Text Generator
-        function renderJumpingText(elementId, text) {
-            const container = document.getElementById(elementId);
-            container.innerHTML = '';
-            text.split('').forEach((char, index) => {
-                const span = document.createElement('span');
-                span.innerText = char === ' ' ? '\u00A0' : char;
-                span.style.animationDelay = `${index * 0.08}s`;
-                container.appendChild(span);
-            });
-        }
-
-        function initCelebration() {
-            renderJumpingText('hbday-text', 'happyyy birthdayy 🥳🎂');
-            showScreen('step-hbday');
-        }
-
-        function showLoveScreen() {
-            renderJumpingText('love-text', 'i loveee u sooo muchh ❤️💖');
-            showScreen('step-love');
-        }
-
-        // 10 Kisses Sequentially & Hugs
-        function startKissesAndHugs() {
-            document.getElementById('kissQuestionArea').style.display = 'none';
-
-            let kissCount = 0;
-            const kissInterval = setInterval(() => {
-                kissCount++;
-                spawnKiss();
-
-                if (kissCount >= 10) {
-                    clearInterval(kissInterval);
-                    // Show Huge Hug overlay after 10 kisses finish
-                    setTimeout(() => {
-                        document.getElementById('hugOverlay').style.display = 'flex';
-                    }, 1200);
-                }
-            }, 350);
-        }
-
-        function spawnKiss() {
-            const kiss = document.createElement('div');
-            kiss.className = 'kiss-mark';
-            kiss.innerText = '💋';
-            
-            // Random position across whole screen
-            const x = Math.random() * (window.innerWidth - 100) + 20;
-            const y = Math.random() * (window.innerHeight - 100) + 20;
-
-            kiss.style.left = `${x}px`;
-            kiss.style.top = `${y}px`;
-
-            document.body.appendChild(kiss);
+            container.innerHTML = htmlContent;
         }
     </script>
 </body>
